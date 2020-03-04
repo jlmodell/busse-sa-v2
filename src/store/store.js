@@ -97,10 +97,47 @@ var Store = observable(
             
             axios.get(`${url}/sa?end=${Store.endingPeriod}&item=${Store.item}`, config).then(res => {
                 
+                res.data.currentPeriod.forEach((x)=>{
+                    x.customer = x._id.customer;
+                    x.cid = x._id.cid;
+                    x.freight = x.quantity * 3;
+                    x.commissions = x.sales * 0.02;
+                    x.rebates = x.rebates * -1;
+                    x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
+                    x.grossProfitMargin = x.grossProfit / x.sales * 100;
+                    x.averagePricePerCase = x.sales / x.quantity;
+                    x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
+                    x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;
+                })
+                res.data.oneYearPrior.forEach((x)=>{
+                    x.customer = x._id.customer;
+                    x.cid = x._id.cid;
+                    x.freight = x.quantity * 3;
+                    x.commissions = x.sales * 0.02;
+                    x.rebates = x.rebates * -1;
+                    x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
+                    x.grossProfitMargin = x.grossProfit / x.sales * 100;
+                    x.averagePricePerCase = x.sales / x.quantity;
+                    x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
+                    x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;               
+                })
+                res.data.twoYearPrior.forEach((x)=>{
+                    x.customer = x._id.customer;
+                    x.cid = x._id.cid;
+                    x.freight = x.quantity * 3;
+                    x.commissions = x.sales * 0.02;
+                    x.rebates = x.rebates * -1;
+                    x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
+                    x.grossProfitMargin = x.grossProfit / x.sales * 100;
+                    x.averagePricePerCase = x.sales / x.quantity;
+                    x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
+                    x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;           
+                })
+                
                 Store.currentPeriod = res.data.currentPeriod;
                 Store.oneYearPriorPeriod = res.data.oneYearPrior;           
                 Store.twoYearPriorPeriod = res.data.twoYearPrior;
-
+                
                 return res.data
             }).then((r) => {
                 let qty = []

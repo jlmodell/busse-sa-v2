@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
 import { validItem } from '../utils/Utils'
-import DataTables from '../components/DataTable'
+// import DataTables from '../components/DataTable'
+import DataTables from '../components/DataTableNonTS'
 import Store from '../store/store'
 
 interface Props {}
