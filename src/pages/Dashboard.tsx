@@ -34,7 +34,7 @@ const Dashboard: React.FC<Props> = observer(() => {
                     setTab(!tab);
                     (itemRef as any).current.focus()                    
                 }}><button className="opacity-50 bg-gray-100 hover:opacity-100 hover:bg-gray-200 border text-sm rounded-md p-1 shadow-md">{tab ? "Hide" : "Show"}</button></div>
-                <div className={tab ? "fixed w-1/2 bg-gray-300 mx-10 p-2 border shadow-xl rounded-br-md rounded-bl-md flex items-center justify-center break-all" : "fixed w-1/2 bg-gray-100 mx-10 p-2 border shadow-xl rounded-br-md rounded-bl-md flex items-center justify-center break-all opacity-50"}>                
+                <div className={tab ? "fixed w-1/2 bg-gray-300 mx-10 p-2 border shadow-xl rounded-br-md rounded-bl-md flex items-center justify-center break-all" : "fixed w-1/2 bg-gray-100 mx-10 p-2 border shadow-xl rounded-br-md rounded-bl-md flex items-center justify-center break-all opacity-0"}>                
                     <label htmlFor="item" className="mx-2 font-bold">Item</label>
                     <input                     
                         type="text"

@@ -12,7 +12,7 @@ const App: React.FC<Props> = observer(() => {
       <div className="w-56 min-h-screen fixed">
         <LeftPane />
       </div>
-      <div className="bg-gray-100 w-screen ml-56">
+      <div className="bg-gray-700 min-h-screen w-screen ml-56">
         <Routes />
       </div>
     </div>
