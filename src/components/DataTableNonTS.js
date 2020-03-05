@@ -1,7 +1,11 @@
 import React, { useMemo } from 'react'
+import './datatable.css'
 import DataTable from 'react-data-table-component';
 
 const DataTables= ({data, title}) => {   
+    const memoData = useMemo(() => data, [])
+    const memoTitle = useMemo(() => <div className="datatable-title">{title}</div>, [])
+    
     const convertArrayOfObjectsToCSV = (array) => {
         let result;
     
@@ -57,21 +61,21 @@ const DataTables= ({data, title}) => {
     const columns = [
         {
             name: 'Customer',
-            selector: '_id.customer',
-            sortable: true,
+            selector: 'customer',
+            sortable: false,
             width: '300px',
         },
         {
             name: 'ID',
-            selector: '_id.cid',
-            sortable: true,
+            selector: 'cid',
+            sortable: false,
             width: '100px',
         },
         {
             name: 'Quantity (cs)',
             // selector: 'quantity',
             cell: row => <div>{row.quantity.toFixed(0)}</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
@@ -83,7 +87,7 @@ const DataTables= ({data, title}) => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
               })}</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
@@ -95,7 +99,7 @@ const DataTables= ({data, title}) => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
               })}</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
@@ -107,7 +111,7 @@ const DataTables= ({data, title}) => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
               })}</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
@@ -119,7 +123,7 @@ const DataTables= ({data, title}) => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
               })}</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
@@ -131,7 +135,7 @@ const DataTables= ({data, title}) => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
               })}</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
@@ -143,7 +147,7 @@ const DataTables= ({data, title}) => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
               })}</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
@@ -156,7 +160,7 @@ const DataTables= ({data, title}) => {
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
               })} ({row.grossProfitMargin.toFixed(1)}%)</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
@@ -168,13 +172,13 @@ const DataTables= ({data, title}) => {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
               })}</div>,
-            sortable: true,
+            sortable: false,
             right: true,
         },
         {
             name: 'Avg $/Cs | T.D. & Reb',
             // selector: 'averageSellPricePerCaseAfterDiscountsAndRebates',
-            sortable: true,
+            sortable: false,
             width: '200px',
             cell: row => <div>{row.averageSellPricePerCaseAfterDiscountsAndRebates.toLocaleString("en", {
                 style: "currency",
@@ -190,14 +194,15 @@ const DataTables= ({data, title}) => {
               })</div>,
             right: true,
         }
-      ];    
+      ];   
+    
     
     return (
         <div>
             <DataTable 
-                title={title}
+                title={memoTitle}
                 columns={columns}
-                data={data}
+                data={memoData}
                 pagination={true}
                 // fixedHeader={true}
                 actions={actionsMemo}    

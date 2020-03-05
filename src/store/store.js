@@ -79,10 +79,9 @@ var Store = observable(
         avgQty: 0,
         avgSales: 0,
         avgCosts: 0,
-        chartData: [],
-        currYrMaths: {},
-        oneYrMaths: {},
-        twoYrMaths: {},
+        currPdPie: [],
+        onePdPriorPie: [],
+        twoPdPriorPie: [],
         isLoaded: false,
         fetchData() {
             Store.isLoaded = false;
@@ -94,45 +93,79 @@ var Store = observable(
                     "Authorization": Store.token
                 }            
             };
+
+            let exportCustomers = [
+                "8497",
+            ]
             
             axios.get(`${url}/sa?end=${Store.endingPeriod}&item=${Store.item}`, config).then(res => {
+
+                if (res.data.currentPeriod) {
+                    res.data.currentPeriod.forEach((x)=>{
+                        x.customer = x._id.customer;
+                        x.cid = x._id.cid;         
+                        delete x._id           
+                        x.freight = x.quantity * 3;
+                        x.commissions = x.sales * 0.02;
+                        x.rebates = x.rebates * -1;
+                        if (exportCustomers.includes(x.cid)) {
+                            x.freight = 0
+                            x.commissions = 0
+                        }
+                        x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
+                        x.grossProfitMargin = x.grossProfit / x.sales * 100;
+                        x.averagePricePerCase = x.sales / x.quantity;
+                        x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
+                        x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;
+                    })
+                } else {
+                    res.data.currentPeriod = []
+                }
                 
-                res.data.currentPeriod.forEach((x)=>{
-                    x.customer = x._id.customer;
-                    x.cid = x._id.cid;
-                    x.freight = x.quantity * 3;
-                    x.commissions = x.sales * 0.02;
-                    x.rebates = x.rebates * -1;
-                    x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
-                    x.grossProfitMargin = x.grossProfit / x.sales * 100;
-                    x.averagePricePerCase = x.sales / x.quantity;
-                    x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
-                    x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;
-                })
-                res.data.oneYearPrior.forEach((x)=>{
-                    x.customer = x._id.customer;
-                    x.cid = x._id.cid;
-                    x.freight = x.quantity * 3;
-                    x.commissions = x.sales * 0.02;
-                    x.rebates = x.rebates * -1;
-                    x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
-                    x.grossProfitMargin = x.grossProfit / x.sales * 100;
-                    x.averagePricePerCase = x.sales / x.quantity;
-                    x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
-                    x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;               
-                })
-                res.data.twoYearPrior.forEach((x)=>{
-                    x.customer = x._id.customer;
-                    x.cid = x._id.cid;
-                    x.freight = x.quantity * 3;
-                    x.commissions = x.sales * 0.02;
-                    x.rebates = x.rebates * -1;
-                    x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
-                    x.grossProfitMargin = x.grossProfit / x.sales * 100;
-                    x.averagePricePerCase = x.sales / x.quantity;
-                    x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
-                    x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;           
-                })
+                if (res.data.oneYearPrior) {
+                    res.data.oneYearPrior.forEach((x)=>{
+                        x.customer = x._id.customer;
+                        x.cid = x._id.cid;       
+                        delete x._id             
+                        x.freight = x.quantity * 3;
+                        x.commissions = x.sales * 0.02;
+                        x.rebates = x.rebates * -1;
+                        if (exportCustomers.includes(x.cid)) {
+                            x.freight = 0
+                            x.commissions = 0
+                        }
+                        x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
+                        x.grossProfitMargin = x.grossProfit / x.sales * 100;
+                        x.averagePricePerCase = x.sales / x.quantity;
+                        x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
+                        x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;               
+                    })
+                } else {
+                    res.data.oneYearPrior = []
+                }
+                
+                if (res.data.twoYearPrior) {
+                    res.data.twoYearPrior.forEach((x)=>{
+                        x.customer = x._id.customer;
+                        x.cid = x._id.cid;                    
+                        delete x._id
+                        x.freight = x.quantity * 3;
+                        x.commissions = x.sales * 0.02;
+                        x.rebates = x.rebates * -1;
+                        if (exportCustomers.includes(x.cid)) {
+                            x.freight = 0
+                            x.commissions = 0
+                        }
+                        x.grossProfit = x.sales - x.costs - x.rebates - x.currentTradeDiscounts - x.commissions - x.freight;
+                        x.grossProfitMargin = x.grossProfit / x.sales * 100;
+                        x.averagePricePerCase = x.sales / x.quantity;
+                        x.averageSellPricePerCaseAfterDiscountsAndRebates = (x.sales - x.rebates - x.currentTradeDiscounts) / x.quantity;
+                        x.difference = x.averagePricePerCase - x.averageSellPricePerCaseAfterDiscountsAndRebates;           
+                    })
+                } else {
+                    res.data.twoYearPrior = []
+                }
+                
                 
                 Store.currentPeriod = res.data.currentPeriod;
                 Store.oneYearPriorPeriod = res.data.oneYearPrior;           
@@ -144,131 +177,104 @@ var Store = observable(
                 let sales = []
                 let costs = []
 
-                let currYr = {
-                    qty: [],
-                    sales: [],
-                    costs: [],
-                    rebates: [],
-                    discounts: []
+                if (r.currentPeriod) {
+                    let currPdPie = []
+                    r.currentPeriod.forEach((x) => {
+                        if (!currPdPie.includes(x.cid+" "+x.customer)) {
+                            currPdPie.push({x: x.cid+" "+x.customer, y: x.quantity})
+                        }
+                    })
+
+                    let currYr = {
+                        qty: [],
+                        sales: [],
+                        costs: [],
+                        rebates: [],
+                        discounts: []
+                    }
+                    r.currentPeriod.forEach(function(x) {                                    
+                        qty.push(x.quantity)
+                        sales.push(x.sales)
+                        costs.push(x.costs)
+                        currYr.qty.push(x.quantity)
+                        currYr.sales.push(x.sales)
+                        currYr.costs.push(x.costs)
+                        currYr.rebates.push(x.rebates)
+                        currYr.discounts.push(x.currentTradeDiscounts)
+                    })
+                    Store.currPdPie = currPdPie
+
                 }
-                let oneYr = {
-                    qty: [],
-                    sales: [],
-                    costs: [],
-                    rebates: [],
-                    discounts: []
+                if (r.oneYearPrior) {
+                    let onePdPriorPie = []
+                    r.oneYearPrior.forEach((x) => {
+                        if (!onePdPriorPie.includes(x.cid+" "+x.customer)) {
+                            onePdPriorPie.push({x: x.cid+" "+x.customer, y: x.quantity})
+                        }
+                    })
+                    Store.onePdPriorPie = onePdPriorPie
+
+                    let oneYr = {
+                        qty: [],
+                        sales: [],
+                        costs: [],
+                        rebates: [],
+                        discounts: []
+                    }
+                    r.oneYearPrior.forEach(function(x) {
+                        qty.push(x.quantity)
+                        sales.push(x.sales)
+                        costs.push(x.costs)
+                        oneYr.qty.push(x.quantity)
+                        oneYr.sales.push(x.sales)
+                        oneYr.costs.push(x.costs)
+                        oneYr.rebates.push(x.rebates)
+                        oneYr.discounts.push(x.currentTradeDiscounts)
+                    })
                 }
-                let twoYr = {
-                    qty: [],
-                    sales: [],
-                    costs: [],
-                    rebates: [],
-                    discounts: []
+                if (r.twoYearPrior) {
+                    let twoPdPriorPie = []
+                    r.twoYearPrior.forEach((x) => {
+                        if (!twoPdPriorPie.includes(x.cid+" "+x.customer)) {
+                            twoPdPriorPie.push({x: x.cid+" "+x.customer, y: x.quantity})
+                        }
+                    })
+                    Store.twoPdPriorPie = twoPdPriorPie
+
+                    let twoYr = {
+                        qty: [],
+                        sales: [],
+                        costs: [],
+                        rebates: [],
+                        discounts: []
+                    }
+                    r.twoYearPrior.forEach(function(x) {
+                        qty.push(x.quantity)
+                        sales.push(x.sales)
+                        costs.push(x.costs)
+                        twoYr.qty.push(x.quantity)
+                        twoYr.sales.push(x.sales)
+                        twoYr.costs.push(x.costs)
+                        twoYr.rebates.push(x.rebates)
+                        twoYr.discounts.push(x.currentTradeDiscounts)
+                    })
                 }
 
-                r.currentPeriod.forEach(function(x) {                
-                    qty.push(x.quantity)
-                    sales.push(x.sales)
-                    costs.push(x.costs)
-                    currYr.qty.push(x.quantity)
-                    currYr.sales.push(x.sales)
-                    currYr.costs.push(x.costs)
-                    currYr.rebates.push(x.rebates)
-                    currYr.discounts.push(x.currentTradeDiscounts)
-                })                                    
-                r.oneYearPrior.forEach(function(x) {
-                    qty.push(x.quantity)
-                    sales.push(x.sales)
-                    costs.push(x.costs)
-                    oneYr.qty.push(x.quantity)
-                    oneYr.sales.push(x.sales)
-                    oneYr.costs.push(x.costs)
-                    oneYr.rebates.push(x.rebates)
-                    oneYr.discounts.push(x.currentTradeDiscounts)
-                })
-                r.twoYearPrior.forEach(function(x) {
-                    qty.push(x.quantity)
-                    sales.push(x.sales)
-                    costs.push(x.costs)
-                    twoYr.qty.push(x.quantity)
-                    twoYr.sales.push(x.sales)
-                    twoYr.costs.push(x.costs)
-                    twoYr.rebates.push(x.rebates)
-                    twoYr.discounts.push(x.currentTradeDiscounts)
-                })
+                let divisor = 0
+                if (r.currentPeriod) {
+                    divisor++
+                }
+                if (r.oneYearPrior) {
+                    divisor++
+                }
+                if (r.twoYearPrior) {
+                    divisor++
+                }
 
-                Store.avgQty = sum_array(qty) / 3
-                Store.avgSales = sum_array(sales) / 3
-                Store.avgCosts = sum_array(costs) / 3            
+                Store.avgQty = sum_array(qty) / divisor
+                Store.avgSales = sum_array(sales) / divisor
+                Store.avgCosts = sum_array(costs) / divisor            
 
-                // data = [# # #]
-                // headers = ["Quantity", "Sales", "Costs"]
-
-                let current = []
-
-                current.push("Current")
-                current.push(sum_array(currYr.qty))
-                current.push(sum_array(currYr.sales))
-                current.push(sum_array(currYr.costs))
-
-                let oneYrPrior = []
-
-                oneYrPrior.push("One Year Prior")
-                oneYrPrior.push(sum_array(oneYr.qty))
-                oneYrPrior.push(sum_array(oneYr.sales))
-                oneYrPrior.push(sum_array(oneYr.costs))
-
-                let twoYrPrior = []
-
-                twoYrPrior.push("Two Years Prior")
-                twoYrPrior.push(sum_array(twoYr.qty))
-                twoYrPrior.push(sum_array(twoYr.sales))
-                twoYrPrior.push(sum_array(twoYr.costs))
-
-                let average = []
-
-                average.push("Average")
-                average.push(sum_array(qty) / 3)
-                average.push(sum_array(sales) / 3)
-                average.push(sum_array(costs) / 3)
-
-                let temp = []
-
-                temp.push(["Period", "Qty", "Sales", "Costs"])
-                temp.push(twoYrPrior)
-                temp.push(oneYrPrior)
-                temp.push(current)
-
-                Store.chartData = temp;
-
-                let zero = {
-                    sales: sum_array(currYr.sales),
-                    tradeDiscounts: sum_array(currYr.discounts),
-                    costs: sum_array(currYr.costs),
-                    quantity: sum_array(currYr.qty),
-                    rebates: sum_array(currYr.rebates),
-                };
-
-                let one = {
-                    sales: sum_array(oneYr.sales),
-                    tradeDiscounts: sum_array(oneYr.discounts),
-                    costs: sum_array(oneYr.costs),
-                    quantity: sum_array(oneYr.qty),
-                    rebates: sum_array(oneYr.rebates),
-                };
-
-                let two = {
-                    sales: sum_array(twoYr.sales),
-                    tradeDiscounts: sum_array(twoYr.discounts),
-                    costs: sum_array(twoYr.costs),
-                    quantity: sum_array(twoYr.qty),
-                    rebates: sum_array(twoYr.rebates),
-                };
-
-                Store.currYrMaths = zero;
-                Store.oneYrMaths = one;
-                Store.twoYrMaths = two;                
-                
             }).then(() => {
                 Store.isLoaded = true                
             }).catch(e=>console.log(e))
@@ -286,32 +292,6 @@ var Store = observable(
         fetchData: action,
     }
 )
-// decorate(Store, {
-//     email: observable,
-//     password: observable,
-//     token: observable,
-//     setToken: action,
-//     unSetToken: action,
-//     item: observable,
-//     endingPeriod: observable,
-//     oneYearPriorEndingPeriod: computed,        
-//     twoYearPriorEndingPeriod: computed,    
-//     zeroYear: computed,    
-//     oneYear: computed, 
-//     twoYear: computed,        
-//     currentPeriod: observable,
-//     oneYearPriorPeriod: observable,
-//     twoYearPriorPeriod: observable,
-//     avgQty: observable,
-//     avgSales: observable,
-//     avgCosts: observable,
-//     chartData: observable,
-//     currYrMaths: observable,
-//     oneYrMaths: observable,
-//     twoYrMaths: observable,
-//     isLoaded: observable,
-//     fetchData: action,
-// })
 
 function sum_array(array) {
     let total = 0

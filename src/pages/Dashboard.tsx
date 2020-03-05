@@ -3,6 +3,8 @@ import { observer } from 'mobx-react'
 import { validItem } from '../utils/Utils'
 // import DataTables from '../components/DataTable'
 import DataTables from '../components/DataTableNonTS'
+import DataCharts from '../components/DataChartNonTS'
+import DataChartsPie from '../components/DataPieChartNonTS'
 import Store from '../store/store'
 
 interface Props {}
@@ -39,7 +41,7 @@ const Dashboard: React.FC<Props> = observer(() => {
                     (itemRef as any).current.focus()                    
                 }}><button className="opacity-50 bg-gray-100 hover:opacity-100 hover:bg-gray-200 border text-sm rounded-md p-1 shadow-md">{tab ? "Hide" : "Show"}</button></div>
                 <div className={tab ? "fixed w-1/2 bg-gray-300 mx-10 p-2 border shadow-xl rounded-br-md rounded-bl-md flex items-center justify-center break-all" : "fixed w-1/2 bg-gray-100 mx-10 p-2 border shadow-xl rounded-br-md rounded-bl-md flex items-center justify-center break-all opacity-0"}>                
-                    <label htmlFor="item" className="mx-2 font-bold">Item</label>
+                    <label htmlFor="item" className="mx-2 font-bold sm:invisible md:invisible lg:visible xl:visible">Item</label>
                     <input                     
                         type="text"
                         ref={itemRef}                
@@ -51,7 +53,7 @@ const Dashboard: React.FC<Props> = observer(() => {
                             localStorage.setItem("item", e.target.value)
                         }}
                     />                
-                    <label htmlFor="item" className="mx-2 font-bold">Ending Period</label>
+                    <label htmlFor="item" className="mx-2 font-bold sm:invisible md:invisible lg:visible xl:visible">Ending Period</label>
                     <input                     
                         type="date"
                         name="endingPeriod"
@@ -69,7 +71,7 @@ const Dashboard: React.FC<Props> = observer(() => {
                             onClick={() => {
                                 Store.fetchData()                                
                             }}
-                            >Refresh</button>
+                            ><span className="sm:invisible md:invisible lg:visible xl:visible">Refresh</span></button>
                     </div>                    
                 </div>
             </div>
@@ -86,29 +88,48 @@ const Dashboard: React.FC<Props> = observer(() => {
                 </div>}
 
                 {Store.isLoaded && <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-5 my-10 mx-10">
-                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">1</div>
-                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">2</div>
-                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">3</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">{Store.avgQty.toFixed(0)}</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">{Store.avgSales.toLocaleString("en", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+              })}</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">{Store.avgCosts.toLocaleString("en", {
+                style: "currency",
+                currency: "USD",
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+              })}</div>
                     <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">4</div>
                     <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">5</div>
                     <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">6</div>
                 </div>}
 
+                {Store.isLoaded && <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-5 my-10 mx-10">
+                        <div className="bg-white p-2 rounded-md flex items-center justify-center h-300 border shadow-md hover:border-gray-700">
+                            <DataCharts/>
+                        </div>
+                        <div className="bg-white p-2 rounded-md flex items-center justify-center h-300 border shadow-md hover:border-gray-700">
+                            <DataChartsPie data={Store.currPdPie} />
+                        </div>
+                    </div>}
+
                 {Store.isLoaded && <div className="px-10 my-10">
                     <div className="flex my-5 justify-center">
-                        <button className="bg-gray-100 hover:bg-gray-600 border rounded-tl-lg rounded-bl-lg p-2 shadow-md my-2 px-5" onClick={() => {
+                        <button className={period.period === "currentPeriod" ? "bg-gray-600 hover:bg-gray-600 border rounded-tl-lg rounded-bl-lg p-2 shadow-md my-2 px-5" : "bg-gray-100 hover:bg-gray-600 border rounded-tl-lg rounded-bl-lg p-2 shadow-md my-2 px-5"} onClick={() => {
                             setPeriod({period: "currentPeriod"})
                         }}>{Store.endingPeriod}</button>       
-                        <button className="bg-gray-100 hover:bg-gray-600 border p-2 shadow-md my-2 px-5" onClick={() => {
+                        <button className={period.period === "oneYearPriorPeriod" ? "bg-gray-600 hover:bg-gray-600 border p-2 shadow-md my-2 px-5" : "bg-gray-100 hover:bg-gray-600 border p-2 shadow-md my-2 px-5"} onClick={() => {
                             setPeriod({period: "oneYearPriorPeriod"})
                         }}>{Store.oneYearPriorEndingPeriod}</button>       
-                        <button className="bg-gray-100 hover:bg-gray-600 border rounded-tr-lg rounded-br-lg p-2 shadow-md my-2 px-5" onClick={() => {
+                        <button className={period.period === "twoYearPriorPeriod" ? "bg-gray-600 hover:bg-gray-600 border rounded-tr-lg rounded-br-lg p-2 shadow-md my-2 px-5" : "bg-gray-100 hover:bg-gray-600 border rounded-tr-lg rounded-br-lg p-2 shadow-md my-2 px-5"} onClick={() => {
                             setPeriod({period: "twoYearPriorPeriod"})
                         }}>{Store.twoYearPriorEndingPeriod}</button>
                     </div>
-                    {period.period === "currentPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Ending Period: ${Store.endingPeriod}`} data={Store.currentPeriod} /></div>}
-                    {period.period === "oneYearPriorPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Ending Period: ${Store.oneYearPriorEndingPeriod}`} data={Store.oneYearPriorPeriod} /></div>}
-                    {period.period === "twoYearPriorPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Ending Period: ${Store.twoYearPriorEndingPeriod}`} data={Store.twoYearPriorPeriod} /></div>}
+                    {period.period === "currentPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Period Ending ${Store.endingPeriod}`} data={Store.currentPeriod} /></div>}
+                    {period.period === "oneYearPriorPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Period Ending ${Store.oneYearPriorEndingPeriod}`} data={Store.oneYearPriorPeriod} /></div>}
+                    {period.period === "twoYearPriorPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Period Ending ${Store.twoYearPriorEndingPeriod}`} data={Store.twoYearPriorPeriod} /></div>}
                 </div>}
 
                 {!dev && <div className="px-10 my-10">
