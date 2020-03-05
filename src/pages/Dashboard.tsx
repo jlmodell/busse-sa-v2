@@ -13,7 +13,10 @@ const Dashboard: React.FC<Props> = observer(() => {
     const [valid, setValid] = useState(false)
     const [tab, setTab] = useState(true)
     const itemRef = useRef(null)
-    const endingPeriodRef = useRef(null)    
+    const endingPeriodRef = useRef(null)
+    const [period, setPeriod] = useState({
+        period: "currentPeriod"
+    })
 
     useEffect(() => {
         (itemRef as any).current.focus()
@@ -83,19 +86,32 @@ const Dashboard: React.FC<Props> = observer(() => {
                 </div>}
 
                 {Store.isLoaded && <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-3 xl:grid-cols-3 gap-5 my-10 mx-10">
-                    <div className="bg-gray-300 p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">1</div>
-                    <div className="bg-gray-300 p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">2</div>
-                    <div className="bg-gray-300 p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">3</div>
-                    <div className="bg-gray-300 p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">4</div>
-                    <div className="bg-gray-300 p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">5</div>
-                    <div className="bg-gray-300 p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">6</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">1</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">2</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">3</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">4</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">5</div>
+                    <div className="bg-white p-2 rounded-md flex items-center justify-center h-20 border shadow-md hover:border-gray-700">6</div>
                 </div>}
 
-                {Store.isLoaded && <div className="px-10 my-10">                
-                    <div className="bg-gray-300 py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`Current Period -> ${Store.endingPeriod}`} data={Store.currentPeriod} /></div>
+                {Store.isLoaded && <div className="px-10 my-10">
+                    <div className="flex my-5 justify-center">
+                        <button className="bg-gray-100 hover:bg-gray-600 border rounded-tl-lg rounded-bl-lg p-2 shadow-md my-2 px-5" onClick={() => {
+                            setPeriod({period: "currentPeriod"})
+                        }}>{Store.endingPeriod}</button>       
+                        <button className="bg-gray-100 hover:bg-gray-600 border p-2 shadow-md my-2 px-5" onClick={() => {
+                            setPeriod({period: "oneYearPriorPeriod"})
+                        }}>{Store.oneYearPriorEndingPeriod}</button>       
+                        <button className="bg-gray-100 hover:bg-gray-600 border rounded-tr-lg rounded-br-lg p-2 shadow-md my-2 px-5" onClick={() => {
+                            setPeriod({period: "twoYearPriorPeriod"})
+                        }}>{Store.twoYearPriorEndingPeriod}</button>
+                    </div>
+                    {period.period === "currentPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Ending Period: ${Store.endingPeriod}`} data={Store.currentPeriod} /></div>}
+                    {period.period === "oneYearPriorPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Ending Period: ${Store.oneYearPriorEndingPeriod}`} data={Store.oneYearPriorPeriod} /></div>}
+                    {period.period === "twoYearPriorPeriod" && <div className="bg-white py-5 rounded-md flex items-center justify-center border shadow-md hover:border-gray-700"><DataTables title={`12 month Ending Period: ${Store.twoYearPriorEndingPeriod}`} data={Store.twoYearPriorPeriod} /></div>}
                 </div>}
 
-                {dev && <div className="px-10 my-10">
+                {!dev && <div className="px-10 my-10">
                     <div className="bg-gray-300 py-5 rounded-md flex items-center justify-center border hover:border-gray-700 break-all">
                         
                     </div>

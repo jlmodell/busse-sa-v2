@@ -45,7 +45,7 @@ const DataTables= ({data, title}) => {
     }          
       
     const Export = ({ onExport }) => (
-        <button onClick={(event) => {
+        <button className="bg-gray-100 hover:bg-gray-600 border rounded-md p-2 shadow-md my-2 px-5" onClick={(event) => {
             onExport(event.target.value)
         }}>Export</button>
     );
@@ -147,7 +147,7 @@ const DataTables= ({data, title}) => {
             right: true,
         },
         {
-            name: 'Gross Profit & Margin',
+            name: 'Gross Profit (Margin)',
             // selector: 'grossProfit',
             width: '200px',
             cell: row => <div>{row.grossProfit.toLocaleString("en", {
@@ -155,7 +155,7 @@ const DataTables= ({data, title}) => {
                 currency: "USD",
                 minimumFractionDigits: 0,
                 maximumFractionDigits: 0
-              })} {row.grossProfitMargin.toFixed(1)}%</div>,
+              })} ({row.grossProfitMargin.toFixed(1)}%)</div>,
             sortable: true,
             right: true,
         },
@@ -165,8 +165,8 @@ const DataTables= ({data, title}) => {
             cell: row => <div>{row.averagePricePerCase.toLocaleString("en", {
                 style: "currency",
                 currency: "USD",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
               })}</div>,
             sortable: true,
             right: true,
@@ -179,15 +179,15 @@ const DataTables= ({data, title}) => {
             cell: row => <div>{row.averageSellPricePerCaseAfterDiscountsAndRebates.toLocaleString("en", {
                 style: "currency",
                 currency: "USD",
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2
               })} (&#916; {row.difference.toLocaleString("en", {
                   style: "currency",
                   currency: "USD",
                   minimumFractionDigits: 2,
                   maximumFractionDigits: 2
                 })
-              })}</div>,
+              })</div>,
             right: true,
         }
       ];    
