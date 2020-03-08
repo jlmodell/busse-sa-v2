@@ -33,20 +33,27 @@ const Dashboard: React.FC<Props> = observer(() => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Store.item])
 
+    const buttonShow = () => (
+        <div className={tab ? "fixed z-10 mt-10" : "fixed z-10 mt-10"} onClick={() => {
+            setTab(!tab);
+            (itemRef as any).current.focus()                    
+        }}>
+            {/* <button className="opacity-50 bg-gray-100 hover:opacity-100 hover:bg-gray-200 border text-sm rounded-md p-1 shadow-md">{tab ? "Hide" : "Show"}</button> */}
+        </div>
+    )
+
     return (
-        <div className="flex flex-col">                        
-            <div className={tab ? "flex justify-center items-center mt-8" : "flex justify-center items-center -mt-6"}>
-                <div className={tab ? "fixed z-10 mt-10" : "fixed z-10 mt-10"} onClick={() => {
-                    setTab(!tab);
-                    (itemRef as any).current.focus()                    
-                }}><button className="opacity-50 bg-gray-100 hover:opacity-100 hover:bg-gray-200 border text-sm rounded-md p-1 shadow-md">{tab ? "Hide" : "Show"}</button></div>
-                <div className={tab ? "fixed w-1/2 bg-gray-300 mx-10 p-2 border shadow-xl rounded-br-md rounded-bl-md flex items-center justify-center break-all" : "fixed w-1/2 bg-gray-100 mx-10 p-2 border shadow-xl rounded-br-md rounded-bl-md flex items-center justify-center break-all opacity-0"}>                
+        <div className="flex flex-col">
+            <div className="w-full">
+            {/* <div className={tab ? "flex justify-center items-center mt-8 opacity-75" : "flex justify-center items-center -mt-6"}> */}                
+                <div className="fixed block w-full bg-gray-600 px-2 py-2 flex items-center justify-center break-all">                
+                    
                     <label htmlFor="item" className="mx-2 font-bold sm:invisible md:invisible lg:visible xl:visible">Item</label>
                     <input                     
                         type="text"
                         ref={itemRef}                
                         name="item"
-                        className={valid ? "bg-gray-100 pl-4 rounded-md py-1 border border-gray-700" : "bg-red-100 pl-4 rounded-md py-1 border border-red-700"} 
+                        className={valid ? "bg-gray-100 pl-4 rounded-md py-1 border border-gray-700" : "bg-red-200 pl-4 rounded-md py-1 border border-red-700"} 
                         value={Store.item} 
                         onChange={(e: { target: HTMLInputElement; } ) => {
                             Store.item = e.target.value
@@ -72,11 +79,12 @@ const Dashboard: React.FC<Props> = observer(() => {
                                 Store.fetchData()                                
                             }}
                             ><span className="sm:invisible md:invisible lg:visible xl:visible">Refresh</span></button>
-                    </div>                    
+                    </div>    
+
                 </div>
             </div>
 
-            <div className="mt-10">
+            <div className="mt-20">
                 {!Store.isLoaded && <div className="px-10 my-10">
                     <div className="bg-gray-300 py-5 rounded-md flex items-center justify-center border hover:border-gray-700">
                         <p>Set an <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md" onClick={() => {
@@ -108,10 +116,12 @@ const Dashboard: React.FC<Props> = observer(() => {
 
                 {Store.isLoaded && <div className="grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2 xl:grid-cols-2 gap-5 my-10 mx-10">
                         <div className="bg-white p-2 rounded-md flex items-center justify-center h-300 border shadow-md hover:border-gray-700">
-                            <DataCharts/>
+                            <DataCharts data={Store.barChartData} />
                         </div>
                         <div className="bg-white p-2 rounded-md flex items-center justify-center h-300 border shadow-md hover:border-gray-700">
-                            <DataChartsPie data={Store.currPdPie} />
+                            {period.period === "currentPeriod"  && <DataChartsPie data={Store.currPdPie} />}
+                            {period.period === "oneYearPriorPeriod"  && <DataChartsPie data={Store.onePdPriorPie} />}
+                            {period.period === "twoYearPriorPeriod"  && <DataChartsPie data={Store.twoPdPriorPie} />}
                         </div>
                     </div>}
 

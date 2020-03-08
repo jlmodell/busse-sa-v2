@@ -1,13 +1,9 @@
-import React, { useMemo, useState } from 'react'
-import { VictoryBar, VictoryPie, VictoryChart, VictoryAxis } from 'victory';
+import React, { useMemo } from 'react'
+import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
 
 
-const DataCharts = () => {
-  const data = useMemo(() => [
-    {period: 1, sales: 13000},
-    {period: 2, sales: 16500},
-    {period: 3, sales: 14250},    
-  ], [])
+const DataCharts = ({data}) => {
+  const memoData = useMemo(() => data, [])
     
 
   return (
@@ -39,7 +35,7 @@ const DataCharts = () => {
             tickFormat={(x) => (`$${x / 1000}k`)}
           />
           <VictoryBar
-            data={data}
+            data={memoData}
             x="period"
             y="sales"
             style={{

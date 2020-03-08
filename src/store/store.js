@@ -82,6 +82,7 @@ var Store = observable(
         currPdPie: [],
         onePdPriorPie: [],
         twoPdPriorPie: [],
+        barChartData: [],
         isLoaded: false,
         fetchData() {
             Store.isLoaded = false;
@@ -97,6 +98,8 @@ var Store = observable(
             let exportCustomers = [
                 "8497",
             ]
+
+            let comparisonPct = 0.018
             
             axios.get(`${url}/sa?end=${Store.endingPeriod}&item=${Store.item}`, config).then(res => {
 
@@ -177,13 +180,34 @@ var Store = observable(
                 let sales = []
                 let costs = []
 
+                let barChartData = []
+                // [ { period: 1, sales: #}]
+
                 if (r.currentPeriod) {
                     let currPdPie = []
+                    let totalSum = []
                     r.currentPeriod.forEach((x) => {
                         if (!currPdPie.includes(x.cid+" "+x.customer)) {
                             currPdPie.push({x: x.cid+" "+x.customer, y: x.quantity})
                         }
-                    })
+                        totalSum.push(x.quantity)
+                    })                    
+
+                    currPdPie.sort((a,b) => b.y - a.y)
+                    
+                    let currPdSum = sum_array(totalSum) * comparisonPct
+                    let simplifiedPie = []
+                    let temp = []
+                    for(let i=0; i < currPdPie.length; i++){
+                        if(currPdPie[i].y > currPdSum) {
+                            simplifiedPie.push(currPdPie[i])
+                        } else {
+                            temp.push(currPdPie[i].y)
+                        }                    
+                    }
+                    simplifiedPie.push({
+                        x: `ALL OTHERS < ${(comparisonPct * 100).toFixed(1)}% SOLD`, y: sum_array(temp),
+                    })                                        
 
                     let currYr = {
                         qty: [],
@@ -202,17 +226,41 @@ var Store = observable(
                         currYr.rebates.push(x.rebates)
                         currYr.discounts.push(x.currentTradeDiscounts)
                     })
-                    Store.currPdPie = currPdPie
 
+                    Store.currPdPie = simplifiedPie
+
+                    barChartData.push({
+                        period: 1, sales: sum_array(currYr.sales)
+                    })
                 }
                 if (r.oneYearPrior) {
                     let onePdPriorPie = []
+                    let totalSum = []
                     r.oneYearPrior.forEach((x) => {
                         if (!onePdPriorPie.includes(x.cid+" "+x.customer)) {
                             onePdPriorPie.push({x: x.cid+" "+x.customer, y: x.quantity})
                         }
+                        totalSum.push(x.quantity)
                     })
-                    Store.onePdPriorPie = onePdPriorPie
+
+                    onePdPriorPie.sort((a,b) => b.y - a.y)
+                    
+                    let currPdSum = sum_array(totalSum) * comparisonPct
+
+                    let simplifiedPie = []
+                    let temp = []
+                    for(let i=0; i < onePdPriorPie.length; i++){
+                        if(onePdPriorPie[i].y > currPdSum) {
+                            simplifiedPie.push(onePdPriorPie[i])
+                        } else {
+                            temp.push(onePdPriorPie[i].y)
+                        }                    
+                    }
+                    simplifiedPie.push({
+                        x: `ALL OTHERS < ${(comparisonPct * 100).toFixed(1)}% SOLD`, y: sum_array(temp),
+                    })                            
+
+                    Store.onePdPriorPie = simplifiedPie
 
                     let oneYr = {
                         qty: [],
@@ -231,15 +279,38 @@ var Store = observable(
                         oneYr.rebates.push(x.rebates)
                         oneYr.discounts.push(x.currentTradeDiscounts)
                     })
+
+                    barChartData.push({
+                        period: 2, sales: sum_array(oneYr.sales)
+                    })
                 }
                 if (r.twoYearPrior) {
                     let twoPdPriorPie = []
+                    let totalSum = []
                     r.twoYearPrior.forEach((x) => {
                         if (!twoPdPriorPie.includes(x.cid+" "+x.customer)) {
                             twoPdPriorPie.push({x: x.cid+" "+x.customer, y: x.quantity})
                         }
+                        totalSum.push(x.quantity)
                     })
-                    Store.twoPdPriorPie = twoPdPriorPie
+
+                    twoPdPriorPie.sort((a,b) => b.y - a.y)
+                    
+                    let currPdSum = sum_array(totalSum) * comparisonPct
+                    let simplifiedPie = []
+                    let temp = []
+                    for(let i=0; i < twoPdPriorPie.length; i++){
+                        if(twoPdPriorPie[i].y > currPdSum) {
+                            simplifiedPie.push(twoPdPriorPie[i])
+                        } else {
+                            temp.push(twoPdPriorPie[i].y)
+                        }                    
+                    }
+                    simplifiedPie.push({
+                        x: `ALL OTHERS < ${(comparisonPct * 100).toFixed(1)}% SOLD`, y: sum_array(temp),
+                    })                 
+
+                    Store.twoPdPriorPie = simplifiedPie
 
                     let twoYr = {
                         qty: [],
@@ -258,6 +329,10 @@ var Store = observable(
                         twoYr.rebates.push(x.rebates)
                         twoYr.discounts.push(x.currentTradeDiscounts)
                     })
+
+                    barChartData.push({
+                        period: 3, sales: sum_array(twoYr.sales)
+                    })
                 }
 
                 let divisor = 0
@@ -273,7 +348,9 @@ var Store = observable(
 
                 Store.avgQty = sum_array(qty) / divisor
                 Store.avgSales = sum_array(sales) / divisor
-                Store.avgCosts = sum_array(costs) / divisor            
+                Store.avgCosts = sum_array(costs) / divisor
+
+                Store.barChartData = barChartData
 
             }).then(() => {
                 Store.isLoaded = true                

@@ -8,11 +8,11 @@ interface Props {}
 
 const App: React.FC<Props> = observer(() => {
   return (
-    <div className="flex">
-      <div className="w-56 min-h-screen fixed">
+    <div className="flex bg-white">
+      <div className="w-56 min-h-screen fixed opacity-80">
         <LeftPane />
       </div>
-      <div className="bg-gray-700 min-h-screen w-screen ml-56">
+      <div className="bg-gray-700 min-h-screen w-screen ml-56 opacity-80">
         <Routes />
       </div>
     </div>
