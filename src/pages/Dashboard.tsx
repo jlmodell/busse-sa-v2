@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState } from 'react'
 import { observer } from 'mobx-react'
-import { validItem } from '../utils/Utils'
+// import { validItem } from '../utils/Utils'
 // import DataTables from '../components/DataTable'
 import DataTables from '../components/DataTableNonTS'
 import DataCharts from '../components/DataChartNonTS'
@@ -12,40 +12,37 @@ interface Props {}
 const Dashboard: React.FC<Props> = observer(() => {    
     const [dev] = useState(true)
 
-    const [valid, setValid] = useState(false)
-    const [tab, setTab] = useState(true)
-    const itemRef = useRef(null)
-    const endingPeriodRef = useRef(null)
+    // const [valid, setValid] = useState(false)
+    // const [tab, setTab] = useState(true)
     const [period, setPeriod] = useState({
         period: "currentPeriod"
     })
 
-    useEffect(() => {
-        (itemRef as any).current.focus()
-    }, [])
+    // useEffect(() => {
+    //     (itemRef as any).current.focus()
+    // }, [])
 
-    useEffect(() => {
-        if (validItem(Store.item)) {
-            setValid(true)
-        } else {
-            setValid(false)
-        }        
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [Store.item])
+    // useEffect(() => {
+    //     if (validItem(Store.item)) {
+    //         setValid(true)
+    //     } else {
+    //         setValid(false)
+    //     }        
+    // // eslint-disable-next-line react-hooks/exhaustive-deps
+    // }, [Store.item])
 
-    const buttonShow = () => (
-        <div className={tab ? "fixed z-10 mt-10" : "fixed z-10 mt-10"} onClick={() => {
-            setTab(!tab);
-            (itemRef as any).current.focus()                    
-        }}>
-            {/* <button className="opacity-50 bg-gray-100 hover:opacity-100 hover:bg-gray-200 border text-sm rounded-md p-1 shadow-md">{tab ? "Hide" : "Show"}</button> */}
-        </div>
-    )
+    // const buttonShow = () => (
+    //     <div className={tab ? "fixed z-10 mt-10" : "fixed z-10 mt-10"} onClick={() => {
+    //         setTab(!tab);
+    //         (itemRef as any).current.focus()                    
+    //     }}>
+    //         {/* <button className="opacity-50 bg-gray-100 hover:opacity-100 hover:bg-gray-200 border text-sm rounded-md p-1 shadow-md">{tab ? "Hide" : "Show"}</button> */}
+    //     </div>
+    // )
 
     return (
         <div className="flex flex-col">
-            <div className="w-full">
-            {/* <div className={tab ? "flex justify-center items-center mt-8 opacity-75" : "flex justify-center items-center -mt-6"}> */}                
+            {/* <div className="w-full">            
                 <div className="fixed block w-full bg-gray-600 px-2 py-2 flex items-center justify-center break-all">                
                     
                     <label htmlFor="item" className="mx-2 font-bold sm:invisible md:invisible lg:visible xl:visible">Item</label>
@@ -82,16 +79,12 @@ const Dashboard: React.FC<Props> = observer(() => {
                     </div>    
 
                 </div>
-            </div>
+            </div> */}
 
             <div className="mt-20">
                 {!Store.isLoaded && <div className="px-10 my-10">
                     <div className="bg-gray-300 py-5 rounded-md flex items-center justify-center border hover:border-gray-700">
-                        <p>Set an <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md" onClick={() => {
-                            (itemRef as any).current.focus()
-                        }}>Item</span> & <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md" onClick={() => {
-                            (endingPeriodRef as any).current.focus()
-                        }}>Ending Period</span> and click <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Refresh</span> to request data from the server.</p>
+                        <p>Set an <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Item</span> & <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Ending Period</span> and click <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Refresh</span> to request data from the server.</p>
                     </div>
                 </div>}
 

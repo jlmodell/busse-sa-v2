@@ -14,8 +14,15 @@ const DataChartsPie = ({data}) => {
           className="flex justify-center"
       >        
         <VictoryPie
-            // colorScale={["cyan", "navy", "tomato", "orange", "gold"]}
-            colorScale={["teal","tomato","coral","silver","cyan","brown","violet","gold","pink"]}
+            colorScale={[              
+              // '#e2e8f0',
+              '#cbd5e0',
+              '#a0aec0',
+              '#718096',
+              '#4a5568',
+              '#2d3748',
+            ]}
+            // colorScale={["teal","tomato","coral","silver","cyan","brown","violet","gold","pink"]}
             data={memoData}
             containerComponent={<VictoryContainer responsive={false}/>}
             // labelRadius={({ innerRadius }) => innerRadius + 5 }
