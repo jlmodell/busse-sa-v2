@@ -3,7 +3,9 @@ import { observer } from 'mobx-react'
 import { validItem } from '../utils/Utils'
 import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
 import logo from '../assets/logo.png'
+
 import Store from '../store/store'
+import { useGQLQuery } from '../utils/Hooks'
 
 interface Props extends RouteComponentProps<any> {}
 
@@ -23,7 +25,11 @@ const LeftPane: React.FC<Props> = observer(({history}) => {
             setValid(false)
         }        
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [Store.item])
+    }, [Store.item]) 
+
+    const curr_yr = useGQLQuery(Store.item, Store.token, Store.oneYearPriorEndingPeriod, Store.endingPeriod)
+    const one_yr_prior = useGQLQuery(Store.item, Store.token, Store.twoYearPriorEndingPeriod, Store.oneYearPriorEndingPeriod)
+    const two_yr_prior = useGQLQuery(Store.item, Store.token, Store.twoYearPriorStartingPeriod, Store.twoYearPriorEndingPeriod)
 
     return (
         <div className="">
@@ -64,7 +70,18 @@ const LeftPane: React.FC<Props> = observer(({history}) => {
                             <button 
                                 className="bg-gray-300 block hover:bg-gray-600 py-5 mt-10 w-full"
                                 onClick={() => {
-                                    Store.fetchData()                                
+                                    Store.fetchData()
+                                    // console.log(curr_yr)
+                                    // console.log(one_yr_prior)
+                                    // console.log(two_yr_prior)
+                                    // history.push({
+                                    //     pathname: "/",
+                                    //     state: {
+                                    //         curr_yr,
+                                    //         one_yr_prior,
+                                    //         two_yr_prior,
+                                    //     }
+                                    // })
                                 }}
                                 >Refresh</button>
                         </div>                        

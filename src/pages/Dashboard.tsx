@@ -1,90 +1,46 @@
-import React, { useRef, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { observer } from 'mobx-react'
 // import { validItem } from '../utils/Utils'
 // import DataTables from '../components/DataTable'
 import DataTables from '../components/DataTableNonTS'
 import DataCharts from '../components/DataChartNonTS'
 import DataChartsPie from '../components/DataPieChartNonTS'
+
 import Store from '../store/store'
+import { useGQLQuery } from '../utils/Hooks'
+
+import { ETLforBarChart } from '../utils/Utils'
 
 interface Props {}
 
-const Dashboard: React.FC<Props> = observer(() => {    
+const Dashboard: React.FC<Props> = observer(() => {
     const [dev] = useState(true)
-
-    // const [valid, setValid] = useState(false)
-    // const [tab, setTab] = useState(true)
+    const [toggleGql, setToggleGql] = useState(false)
     const [period, setPeriod] = useState({
         period: "currentPeriod"
     })
 
-    // useEffect(() => {
-    //     (itemRef as any).current.focus()
-    // }, [])
-
-    // useEffect(() => {
-    //     if (validItem(Store.item)) {
-    //         setValid(true)
-    //     } else {
-    //         setValid(false)
-    //     }        
-    // // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [Store.item])
-
-    // const buttonShow = () => (
-    //     <div className={tab ? "fixed z-10 mt-10" : "fixed z-10 mt-10"} onClick={() => {
-    //         setTab(!tab);
-    //         (itemRef as any).current.focus()                    
-    //     }}>
-    //         {/* <button className="opacity-50 bg-gray-100 hover:opacity-100 hover:bg-gray-200 border text-sm rounded-md p-1 shadow-md">{tab ? "Hide" : "Show"}</button> */}
-    //     </div>
-    // )
+    const curr_yr = useGQLQuery(Store.item, Store.token, Store.oneYearPriorEndingPeriod, Store.endingPeriod)
+    const one_yr_prior = useGQLQuery(Store.item, Store.token, Store.twoYearPriorEndingPeriod, Store.oneYearPriorEndingPeriod)
+    const two_yr_prior = useGQLQuery(Store.item, Store.token, Store.twoYearPriorStartingPeriod, Store.twoYearPriorEndingPeriod)    
 
     return (
-        <div className="flex flex-col">
-            {/* <div className="w-full">            
-                <div className="fixed block w-full bg-gray-600 px-2 py-2 flex items-center justify-center break-all">                
-                    
-                    <label htmlFor="item" className="mx-2 font-bold sm:invisible md:invisible lg:visible xl:visible">Item</label>
-                    <input                     
-                        type="text"
-                        ref={itemRef}                
-                        name="item"
-                        className={valid ? "bg-gray-100 pl-4 rounded-md py-1 border border-gray-700" : "bg-red-200 pl-4 rounded-md py-1 border border-red-700"} 
-                        value={Store.item} 
-                        onChange={(e: { target: HTMLInputElement; } ) => {
-                            Store.item = e.target.value
-                            localStorage.setItem("item", e.target.value)
-                        }}
-                    />                
-                    <label htmlFor="item" className="mx-2 font-bold sm:invisible md:invisible lg:visible xl:visible">Ending Period</label>
-                    <input                     
-                        type="date"
-                        name="endingPeriod"
-                        ref={endingPeriodRef}
-                        className="bg-gray-100 text-center rounded-md py-1 border border-gray-700" 
-                        value={Store.endingPeriod} 
-                        onChange={(e: { target: HTMLInputElement; } ) => {
-                            Store.endingPeriod = e.target.value
-                            localStorage.setItem("endingPeriod", e.target.value)
-                        }}
-                    />
-                    <div className="px-10">
-                        <button 
-                            className="bg-gray-100 hover:bg-gray-600 border rounded-md p-2 shadow-md my-2 px-5"
-                            onClick={() => {
-                                Store.fetchData()                                
-                            }}
-                            ><span className="sm:invisible md:invisible lg:visible xl:visible">Refresh</span></button>
-                    </div>    
-
-                </div>
-            </div> */}
-
+        <div className="flex flex-col">            
             <div className="mt-20">
                 {!Store.isLoaded && <div className="px-10 my-10">
                     <div className="bg-gray-300 py-5 rounded-md flex items-center justify-center border hover:border-gray-700">
-                        <p>Set an <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Item</span> & <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Ending Period</span> and click <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Refresh</span> to request data from the server.</p>
+                        {/* <p>Set an <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Item</span> & <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Ending Period</span> and click <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Refresh</span> to request data from the server.</p> */}
+                        {<button onClick={() => {
+                            setToggleGql(!toggleGql)
+                            console.log(curr_yr)
+                            console.log(one_yr_prior)
+                            console.log(two_yr_prior)
+                            
+                            let barChartData = ETLforBarChart(two_yr_prior.data.sales, one_yr_prior.data.sales, curr_yr.data.sales)
+                            console.log(barChartData)                                                  
+                            console.log(Store.barChartData)
+                        }}>Console Log (Data)</button>}
+                        {toggleGql && <div>Query is in the displayed in your console</div>}
                     </div>
                 </div>}
 

@@ -1,3 +1,40 @@
+export function sum_array(array: []): number {
+    let total = 0
+    for(let i=0; i < array.length; i++) {
+        total += array[i]
+    }
+    return total
+}
+
+export function ETLforBarChart(data1: any[], data2:any[], data3:any[]): any[] {
+    let initialValue = 0;
+    let barChartData = [];
+    // [ { period: x, sales: y } ]
+
+    barChartData.push({
+        period: 1,
+        sales: data1.reduce(function (accumulator, currentValue) {
+            return accumulator + currentValue.sales;
+        }, initialValue)
+    }) 
+
+    barChartData.push({
+        period: 2,
+        sales: data2.reduce(function (accumulator, currentValue) {
+            return accumulator + currentValue.sales;
+        }, initialValue)
+    }) 
+
+    barChartData.push({
+        period: 3,
+        sales: data3.reduce(function (accumulator, currentValue) {
+            return accumulator + currentValue.sales;
+        }, initialValue)
+    }) 
+
+    return barChartData
+}   
+
 export var items: string[] = [
     "CS7937C",
     "5718",

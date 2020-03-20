@@ -1,5 +1,6 @@
 import { action, computed, observable } from "mobx";
 import axios from "axios";
+import {sum_array} from '../utils/Utils'
 
 /* eslint-disable */
 
@@ -63,6 +64,10 @@ var Store = observable(
         get twoYearPriorEndingPeriod() {
             let ep = new Date(Store.endingPeriod)
             return new Date(ep.getFullYear()-2, ep.getMonth(), ep.getDate()+1).toISOString().substring(0,10)
+        },
+        get twoYearPriorStartingPeriod() {
+            let ep = new Date(Store.endingPeriod)
+            return new Date(ep.getFullYear()-3, ep.getMonth(), ep.getDate()+1).toISOString().substring(0,10)
         },
         get zeroYear() {
             return `Ending Period: ${Store.endingPeriod}`
@@ -369,13 +374,5 @@ var Store = observable(
         fetchData: action,
     }
 )
-
-function sum_array(array) {
-    let total = 0
-    for(let i=0; i < array.length; i++) {
-        total += array[i]
-    }
-    return total
-}
 
 export default Store;
