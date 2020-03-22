@@ -1,6 +1,22 @@
 import { action, computed, observable } from "mobx";
 import axios from "axios";
+import Cookies from 'js-cookie'
+import { GraphQLClient } from 'graphql-request'
+
 import {sum_array} from '../utils/Utils'
+
+// const client = new GraphQLClient(
+//     "http://localhost:4000/graphql", {
+//         credentials: "include"
+//     }
+// )
+
+const client = new GraphQLClient(
+    "http://104.200.28.226:4000/graphql", {
+        credentials: "include"
+    }
+)
+
 
 /* eslint-disable */
 
@@ -8,7 +24,16 @@ var Store = observable(
     {
         email: "",
         password: "",
-        token: localStorage.getItem("token") || "",
+        get token() {
+            // const accessToken = Cookies.get("access-token")
+            // const refreshToken = Cookies.get("refresh-token")
+           
+            // if (!accessToken && !refreshToken) {
+            //     return false
+            // }
+
+            return true
+        },
         tokenIsValid: false,
         async setToken() {
             let url = "http://104.200.28.226:8080";
@@ -36,6 +61,16 @@ var Store = observable(
             await localStorage.clear()
             Store.token = ""
             Store.tokenIsValid = true
+        },        
+        async setCookies(query, variables) {     
+            const res = await client.request(query, variables)
+            
+            return res
+        },
+        async unSetCookies() {
+            Cookies.remove("access-token")
+            Cookies.remove("refresh-token")
+            return true
         },
         checkValidToken(token, date) {
             let url = "http://104.200.28.226:8080";
@@ -56,7 +91,7 @@ var Store = observable(
             })
         },
         item: localStorage.getItem("item") || "",
-        endingPeriod: localStorage.getItem("endingPeriod") || "",        
+        endingPeriod: localStorage.getItem("endingPeriod") || "2019-12-31",
         get oneYearPriorEndingPeriod() {
             let ep = new Date(Store.endingPeriod)
             return new Date(ep.getFullYear()-1, ep.getMonth(), ep.getDate()+1).toISOString().substring(0,10)
@@ -89,6 +124,45 @@ var Store = observable(
         twoPdPriorPie: [],
         barChartData: [],
         isLoaded: false,
+        async gql_fetch(query, variables) {
+            const res = await client.request(query, variables)
+            console.log(res)
+        },
+        async gql_fetch_data() {
+            const query = `
+                query Sales($start: String!, $end: String!, $item: String!, $freight: Float, $overhead: Float, $commissions: Float) {
+                    sales(start:$start, end:$end, item:$item, freight:$freight, overhead:$overhead, commissions:$commissions) {
+                        _id {
+                            iid
+                            item
+                            cid
+                            customer
+                        }
+                        quantity
+                        sales
+                        costs
+                        rebates
+                        tradefees
+                        commissions
+                        freight
+                        overhead
+                        grossProfit
+                        grossProfitMargin
+                    }
+                }
+            `
+            const variables = {
+                start: Store.oneYearPriorEndingPeriod,
+                end: Store.endingPeriod,
+                item: Store.item
+            }
+
+            try {
+                const res = await client.request(query, variables)
+                console.log(res)
+            } catch {}
+            
+        },
         fetchData() {
             Store.isLoaded = false;
 

@@ -7,22 +7,15 @@ import DataCharts from '../components/DataChartNonTS'
 import DataChartsPie from '../components/DataPieChartNonTS'
 
 import Store from '../store/store'
-import { useGQLQuery } from '../utils/Hooks'
 
-import { ETLforBarChart } from '../utils/Utils'
 
 interface Props {}
 
 const Dashboard: React.FC<Props> = observer(() => {
-    const [dev] = useState(true)
-    const [toggleGql, setToggleGql] = useState(false)
+    const [dev] = useState(true)    
     const [period, setPeriod] = useState({
         period: "currentPeriod"
     })
-
-    const curr_yr = useGQLQuery(Store.item, Store.token, Store.oneYearPriorEndingPeriod, Store.endingPeriod)
-    const one_yr_prior = useGQLQuery(Store.item, Store.token, Store.twoYearPriorEndingPeriod, Store.oneYearPriorEndingPeriod)
-    const two_yr_prior = useGQLQuery(Store.item, Store.token, Store.twoYearPriorStartingPeriod, Store.twoYearPriorEndingPeriod)    
 
     return (
         <div className="flex flex-col">            
@@ -31,16 +24,18 @@ const Dashboard: React.FC<Props> = observer(() => {
                     <div className="bg-gray-300 py-5 rounded-md flex items-center justify-center border hover:border-gray-700">
                         {/* <p>Set an <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Item</span> & <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Ending Period</span> and click <span className="bg-teal-100 pt-1 pb-2 px-1 rounded-md">Refresh</span> to request data from the server.</p> */}
                         {<button onClick={() => {
-                            setToggleGql(!toggleGql)
-                            console.log(curr_yr)
-                            console.log(one_yr_prior)
-                            console.log(two_yr_prior)
-                            
-                            let barChartData = ETLforBarChart(two_yr_prior.data.sales, one_yr_prior.data.sales, curr_yr.data.sales)
-                            console.log(barChartData)                                                  
-                            console.log(Store.barChartData)
-                        }}>Console Log (Data)</button>}
-                        {toggleGql && <div>Query is in the displayed in your console</div>}
+                            const query = `
+                                query Item($item: String!) {
+                                    item(iid: $item)
+                                }
+                            `
+                            const variables = {
+                                item: Store.item
+                            }
+
+                            Store.gql_fetch(query, variables)
+                            Store.gql_fetch_data()
+                        }}>Console Log (Data)</button>}                        
                     </div>
                 </div>}
 

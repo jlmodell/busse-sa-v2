@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { VictoryPie, VictoryContainer } from 'victory';
 
 
 const DataChartsPie = ({data}) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoData = useMemo(() => data, [])
 
   return (

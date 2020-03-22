@@ -5,7 +5,6 @@ import { NavLink, RouteComponentProps, withRouter } from 'react-router-dom';
 import logo from '../assets/logo.png'
 
 import Store from '../store/store'
-import { useGQLQuery } from '../utils/Hooks'
 
 interface Props extends RouteComponentProps<any> {}
 
@@ -26,10 +25,6 @@ const LeftPane: React.FC<Props> = observer(({history}) => {
         }        
     // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [Store.item]) 
-
-    const curr_yr = useGQLQuery(Store.item, Store.token, Store.oneYearPriorEndingPeriod, Store.endingPeriod)
-    const one_yr_prior = useGQLQuery(Store.item, Store.token, Store.twoYearPriorEndingPeriod, Store.oneYearPriorEndingPeriod)
-    const two_yr_prior = useGQLQuery(Store.item, Store.token, Store.twoYearPriorStartingPeriod, Store.twoYearPriorEndingPeriod)
 
     return (
         <div className="">
@@ -71,17 +66,6 @@ const LeftPane: React.FC<Props> = observer(({history}) => {
                                 className="bg-gray-300 block hover:bg-gray-600 py-5 mt-10 w-full"
                                 onClick={() => {
                                     Store.fetchData()
-                                    // console.log(curr_yr)
-                                    // console.log(one_yr_prior)
-                                    // console.log(two_yr_prior)
-                                    // history.push({
-                                    //     pathname: "/",
-                                    //     state: {
-                                    //         curr_yr,
-                                    //         one_yr_prior,
-                                    //         two_yr_prior,
-                                    //     }
-                                    // })
                                 }}
                                 >Refresh</button>
                         </div>                        
@@ -97,8 +81,8 @@ const LeftPane: React.FC<Props> = observer(({history}) => {
                     </li>          }
                     {Store.token && <li className="w-full">
                         <button className="bg-gray-300 block hover:bg-gray-600 py-5 w-full" onClick={async () => {
-                            await Store.unSetToken()
-                            if (!Store.token) {
+                            const res = await Store.unSetCookies()
+                            if (res === true) {
                                 history.push("/")
                             }
                         }}>Logout</button>

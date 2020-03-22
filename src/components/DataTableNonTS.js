@@ -3,7 +3,9 @@ import './datatable.css'
 import DataTable from 'react-data-table-component';
 
 const DataTables= ({data, title}) => {   
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const memoData = useMemo(() => data, [])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const memoTitle = useMemo(() => <div className="datatable-title">{title}</div>, [])
     
     const convertArrayOfObjectsToCSV = (array) => {
@@ -53,7 +55,8 @@ const DataTables= ({data, title}) => {
             onExport(event.target.value)
         }}>Export</button>
     );
-
+    
+    // eslint-disable-next-line react-hooks/exhaustive-deps
     const actionsMemo = useMemo(() => <Export onExport={() => downloadCSV(data)} />, []);
 
 

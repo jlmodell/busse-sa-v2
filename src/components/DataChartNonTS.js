@@ -3,6 +3,7 @@ import { VictoryBar, VictoryChart, VictoryAxis } from 'victory';
 
 
 const DataCharts = ({data}) => {
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const memoData = useMemo(() => data, [])
     
 

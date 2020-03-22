@@ -1,15 +1,17 @@
 import React from 'react';
-import { RouteComponentProps, withRouter } from "react-router-dom";
+import { RouteComponentProps, withRouter, useHistory } from "react-router-dom";
 import { observer } from 'mobx-react'
+
 import Store from '../store/store';
 
 interface Props extends RouteComponentProps{}
 
-const Login: React.FC<Props> = observer(({ history }) => {        
+const Login: React.FC<Props> = observer(() => {
+    const history = useHistory()
     return (
         <div className="flex justify-center items-center m-48">
             <div className="w-full max-w-md bg-white rounded-md" >
-                <form className="bg-white shadow-md rounded px-8 py-8 pt-8">
+                <div className="bg-white shadow-md rounded px-8 py-8 pt-8">
                     <div className="px-4 pb-4">
                         <label htmlFor="email" className="text-sm block font-bold  pb-2">EMAIL ADDRESS</label>
                         <input 
@@ -36,16 +38,36 @@ const Login: React.FC<Props> = observer(({ history }) => {
                         <button 
                             className="bg-teal-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline" 
                             onClick={async () => {
-                                await Store.setToken()
-                                if (Store.token) {
-                                    history.push("/sa")
-                                }                            
+                                const query: string = `
+                                    mutation Login($email: String!, $password: String!) {
+                                        login(email: $email, password: $password) {
+                                            authorized
+                                        }
+                                    }
+                                `                                
+
+                                const variables: any = {
+                                    email: Store.email,
+                                    password: Store.password
+                                }                                
+
+                                try {
+                                    const res = await Store.setCookies(query, variables)
+                                    console.log(res.login.authorized)
+
+                                    console.log(Store.token)
+                                    if (res.login.authorized === true) {
+                                        history.push("/sa")                                        
+                                    }
+                                } catch(err) {
+                                    alert(err.response.errors[0].message)
+                                }
                             }}
                         >
                             Sign In
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     )
