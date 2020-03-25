@@ -54,8 +54,6 @@ const Login: React.FC<Props> = observer(() => {
                                 try {
                                     const res = await Store.setCookies(query, variables)
                                     console.log(res.login.authorized)
-
-                                    console.log(Store.token)
                                     if (res.login.authorized === true) {
                                         history.push("/sa")                                        
                                     }

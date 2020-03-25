@@ -1,0 +1,13 @@
+@keyframes shadow-pulse
+{
+  0% {
+    box-shadow: 0 0 0 0px rgba(226, 232, 240, 0.2);
+  }
+  100% {
+    box-shadow: 0 0 0 35px rgba(226, 232, 240, 0);
+  }
+}
+
+.logo-pulse {
+    animation: shadow-pulse 1s 3;
+}
